@@ -1,4 +1,54 @@
-/* assets/css/tailwind.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+  @apply bg-white text-black; /* Default (Light Mode) */
+  @apply transition-colors duration-300;
+}
+
+html.dark {
+  @apply bg-black text-white; /* Dark Mode */
+}
+
+:root {
+  /*LIGHT MODE (default) */
+  --nav-base: #ffffff;
+  --nav-pill: #000000;
+  --nav-pill-text: #ffffff;
+  --nav-hover-text: #000000;
+}
+
+html.dark {
+  /*DARK MODE */
+  --nav-base: #000000;
+  --nav-pill: #ffffff;
+  --nav-pill-text: #000000;
+  --nav-hover-text: #ffffff;
+}
+
+::view-transition-new(root) {
+    animation: none;
+    
+    animation-name: reveal-in;
+    animation-duration: 0.7s;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    
+    mix-blend-mode: normal; 
+}
+
+::view-transition-old(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+/* Ini adalah definisi animasi 'reveal-in'
+*/
+@keyframes reveal-in {
+    from {
+        clip-path: circle(0% at var(--clip-x) var(--clip-y));
+    }
+    to {
+        clip-path: circle(150vmax at var(--clip-x) var(--clip-y));
+    }
+}
