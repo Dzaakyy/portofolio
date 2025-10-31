@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { gsap } from 'gsap';
-import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef, watch, nextTick } from 'vue';
 
 type PillNavItem = {
   label: string;
@@ -15,10 +15,10 @@ interface PillNavProps {
   activeHref?: string;
   className?: string;
   ease?: string;
-//   baseColor?: string;
-//   pillColor?: string;
-//   hoveredPillTextColor?: string;
-//   pillTextColor?: string;
+  baseColor?: string;
+  pillColor?: string;
+  hoveredPillTextColor?: string;
+  pillTextColor?: string;
   onMobileMenuClick?: () => void;
   initialLoadAnimation?: boolean;
 }
@@ -27,9 +27,10 @@ const props = withDefaults(defineProps<PillNavProps>(), {
   logoAlt: 'Logo',
   className: '',
   ease: 'power3.easeOut',
-//   baseColor: '#fff',
-//   pillColor: '#060010',
-//   hoveredPillTextColor: '#060010',
+  baseColor: '#fff',
+  pillColor: '#060010',
+  hoveredPillTextColor: '#060010',
+  pillTextColor: '#fff',
   initialLoadAnimation: true
 });
 
@@ -112,7 +113,7 @@ onMounted(() => {
   window.addEventListener('resize', onResize);
 
   if (document.fonts) {
-    document.fonts.ready.then(layout).catch(() => {});
+    document.fonts.ready.then(layout).catch(() => { });
   }
 
   const menu = mobileMenuRef.value;
@@ -149,8 +150,17 @@ onBeforeUnmount(() => {
 });
 
 watch(
-  () => [props.items, props.ease, props.initialLoadAnimation],
-  () => {
+  () => [
+    props.items,
+    props.ease,
+    props.initialLoadAnimation,
+    props.baseColor,
+    props.pillColor,
+    props.hoveredPillTextColor,
+    props.pillTextColor
+  ],
+   async () => {
+    await nextTick();
     layout();
   },
   { deep: true }
@@ -253,10 +263,10 @@ const isExternalLink = (href: string) =>
 const isRouterLink = (href?: string) => href && !isExternalLink(href);
 
 const cssVars = computed(() => ({
-  '--base': 'var(--nav-base)',
-  '--pill-bg': 'var(--nav-pill)',
-  '--hover-text': 'var(--nav-hover-text)',
-  '--pill-text': 'var(--nav-pill-text)',
+  '--base': props.baseColor,
+  '--pill-bg': props.pillColor,
+  '--hover-text': props.hoveredPillTextColor,
+  '--pill-text': props.pillTextColor,
   '--nav-h': '42px',
   '--logo': '36px',
   '--pill-pad-x': '18px',
@@ -274,40 +284,25 @@ const setCircleRef = (el: HTMLSpanElement | null, index: number) => {
   <div class="top-[1em] left-0 z-[1000] fixed w-full md:w-auto md:left-1/2 md:-translate-x-1/2">
     <nav
       :class="['w-full md:w-max flex items-center justify-between md:justify-start box-border px-4 md:px-0', className]"
-      aria-label="Primary"
-      :style="cssVars"
-    >
-      <component
-      v-if="logo"
-        :is="isRouterLink(items?.[0]?.href) ? 'RouterLink' : 'a'"
+      aria-label="Primary" :style="cssVars">
+      <component v-if="logo" :is="isRouterLink(items?.[0]?.href) ? 'RouterLink' : 'a'"
         :to="isRouterLink(items?.[0]?.href) ? items[0]?.href : undefined"
-        :href="!isRouterLink(items?.[0]?.href) ? items?.[0]?.href || '#' : undefined"
-        aria-label="Home"
-        role="menuitem"
-        ref="logoRef"
-        class="inline-flex justify-center items-center p-2 rounded-full overflow-hidden"
-        :style="{
+        :href="!isRouterLink(items?.[0]?.href) ? items?.[0]?.href || '#' : undefined" aria-label="Home" role="menuitem"
+        ref="logoRef" class="inline-flex justify-center items-center p-2 rounded-full overflow-hidden" :style="{
           width: 'var(--nav-h)',
           height: 'var(--nav-h)',
           background: 'var(--base, #000)'
-        }"
-        @mouseenter="handleLogoEnter"
-      >
+        }" @mouseenter="handleLogoEnter">
         <img :src="logo" :alt="logoAlt" ref="logoImgRef" class="block w-full h-full object-cover" />
       </component>
 
-      <div
-        ref="navItemsRef"
-        class="hidden relative md:flex items-center ml-2 rounded-full"
-        :style="{
-          height: 'var(--nav-h)',
-          background: 'var(--base, #000)'
-        }"
-      >
+      <div ref="navItemsRef" class="hidden relative md:flex items-center ml-2 rounded-full" :style="{
+        height: 'var(--nav-h)',
+        background: 'var(--base, #000)'
+      }">
         <ul role="menubar" class="flex items-stretch m-0 p-[3px] h-full list-none" :style="{ gap: 'var(--pill-gap)' }">
           <li v-for="(item, i) in items" :key="item.href || `item-${i}`" class="flex h-full" role="none">
-            <component
-              :is="isRouterLink(item.href) ? 'RouterLink' : 'a'"
+            <component :is="isRouterLink(item.href) ? 'RouterLink' : 'a'"
               :to="isRouterLink(item.href) ? item.href : undefined"
               :href="!isRouterLink(item.href) ? item.href : undefined"
               class="inline-flex box-border relative justify-center items-center px-0 rounded-full h-full overflow-hidden font-semibold text-[16px] no-underline uppercase leading-[0] tracking-[0.2px] whitespace-nowrap cursor-pointer"
@@ -316,98 +311,69 @@ const setCircleRef = (el: HTMLSpanElement | null, index: number) => {
                 color: 'var(--pill-text, var(--base, #000))',
                 paddingLeft: 'var(--pill-pad-x)',
                 paddingRight: 'var(--pill-pad-x)'
-              }"
-              :aria-label="item.ariaLabel || item.label"
-              @mouseenter="handleEnter(i)"
-              @mouseleave="handleLeave(i)"
-            >
-              <span
-                class="block bottom-0 left-1/2 z-[1] absolute rounded-full pointer-events-none hover-circle"
-                :style="{
-                  background: 'var(--base, #000)',
-                  willChange: 'transform'
-                }"
-                aria-hidden="true"
-                :ref="el => setCircleRef(el as HTMLSpanElement, i)"
-              />
+              }" :aria-label="item.ariaLabel || item.label" @mouseenter="handleEnter(i)" @mouseleave="handleLeave(i)">
+              <span class="block bottom-0 left-1/2 z-[1] absolute rounded-full pointer-events-none hover-circle" :style="{
+                background: 'var(--base, #000)',
+                willChange: 'transform'
+              }" aria-hidden="true" :ref="el => setCircleRef(el as HTMLSpanElement, i)" />
               <span class="inline-block z-[2] relative leading-[1] label-stack">
                 <span class="inline-block z-[2] relative leading-[1] pill-label" :style="{ willChange: 'transform' }">
                   {{ item.label }}
                 </span>
-                <span
-                  class="inline-block top-0 left-0 z-[3] absolute pill-label-hover"
-                  :style="{
-                    color: 'var(--hover-text, #fff)',
-                    willChange: 'transform, opacity'
-                  }"
-                  aria-hidden="true"
-                >
+                <span class="inline-block top-0 left-0 z-[3] absolute pill-label-hover" :style="{
+                  color: 'var(--hover-text, #fff)',
+                  willChange: 'transform, opacity'
+                }" aria-hidden="true">
                   {{ item.label }}
                 </span>
               </span>
-              <span
-                v-if="activeHref === item.href"
+              <span v-if="activeHref === item.href"
                 class="-bottom-[6px] left-1/2 z-[4] absolute rounded-full w-3 h-3 -translate-x-1/2"
-                :style="{ background: 'var(--base, #000)' }"
-                aria-hidden="true"
-              />
+                :style="{ background: 'var(--base, #000)' }" aria-hidden="true" />
             </component>
           </li>
         </ul>
       </div>
 
-      <button
-        ref="hamburgerRef"
-        @click="toggleMobileMenu"
-        aria-label="Toggle menu"
-        :aria-expanded="isMobileMenuOpen"
+      <button ref="hamburgerRef" @click="toggleMobileMenu" aria-label="Toggle menu" :aria-expanded="isMobileMenuOpen"
         class="md:hidden relative flex flex-col justify-center items-center gap-1 p-0 border-0 rounded-full cursor-pointer"
         :style="{
           width: 'var(--nav-h)',
           height: 'var(--nav-h)',
           background: 'var(--base, #000)'
-        }"
-      >
+        }">
         <span
           class="rounded w-4 h-0.5 origin-center transition-all duration-[10ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] hamburger-line"
-          :style="{ background: 'var(--pill-bg, #fff)' }"
-        />
+          :style="{ background: 'var(--pill-bg, #fff)' }" />
         <span
           class="rounded w-4 h-0.5 origin-center transition-all duration-[10ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] hamburger-line"
-          :style="{ background: 'var(--pill-bg, #fff)' }"
-        />
+          :style="{ background: 'var(--pill-bg, #fff)' }" />
       </button>
     </nav>
 
-    <div
-      ref="mobileMenuRef"
+    <div ref="mobileMenuRef"
       class="md:hidden top-[3em] right-4 left-4 z-[998] absolute shadow-[0_8px_32px_rgba(0,0,0,0.12)] rounded-[27px] origin-top"
       :style="{
         ...cssVars,
         background: 'var(--base, #f0f0f0)'
-      }"
-    >
+      }">
       <ul class="flex flex-col gap-[3px] m-0 p-[3px] list-none">
         <li v-for="item in items" :key="item.href || `mobile-${item.label}`">
-          <component
-            :is="isRouterLink(item.href) ? 'RouterLink' : 'a'"
+          <component :is="isRouterLink(item.href) ? 'RouterLink' : 'a'"
             :to="isRouterLink(item.href) ? item.href : undefined"
             :href="!isRouterLink(item.href) ? item.href : undefined"
             class="block px-4 py-3 rounded-[50px] font-medium text-[16px] transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)]"
-            :style="{ background: 'var(--pill-bg, #fff)', color: 'var(--pill-text, #fff)' }"
-            @mouseenter="
+            :style="{ background: 'var(--pill-bg, #fff)', color: 'var(--pill-text, #fff)' }" @mouseenter="
               (e: MouseEvent) => {
                 (e.currentTarget as HTMLAnchorElement).style.background = 'var(--base)';
                 (e.currentTarget as HTMLAnchorElement).style.color = 'var(--hover-text, #fff)';
               }
-            "
-            @mouseleave="
+            " @mouseleave="
               (e: MouseEvent) => {
                 (e.currentTarget as HTMLAnchorElement).style.background = 'var(--pill-bg, #fff)';
                 (e.currentTarget as HTMLAnchorElement).style.color = 'var(--pill-text, #fff)';
               }
-            "
-          >
+            ">
             {{ item.label }}
           </component>
         </li>
