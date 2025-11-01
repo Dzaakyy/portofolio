@@ -3,20 +3,30 @@
         <Aurora :color-stops="auroraColors" :amplitude="1.0" :blend="0.5" :speed="1.0" :intensity="1.0" />
 
         <PillNav :items="[
-            { label: 'Home', href: '/' },
-            { label: 'About', href: '/about' },
-            { label: 'Services', href: '/services' },
-            { label: 'Contact', href: '/contact' }
+            { label: 'Home', href: '#' },
+            { label: 'About', href: '#about' },
+            { label: 'Portofolio', href: '#portofolio' },
+            { label: 'Contact', href: '#contact' }
         ]" activeHref="/" :baseColor="baseColor" :pillColor="pillColor" :hoveredPillTextColor="hoveredPillTextColor"
             :pillTextColor="pillTextColor" />
 
-        <NuxtPage />
+    <main>
+      <PageIndex />
+      <PageAbout />
+      <PagePortofolio />
+      <PageContact />
+    </main>
       
 
     </div>
 </template>
 
 <script setup lang="ts">
+
+import PageIndex from '~/pages/index.vue'
+import PageAbout from '~/pages/about.vue'
+import PagePortofolio from '~/pages/portofolio.vue'
+import PageContact from '~/pages/contact.vue'
 import { computed } from 'vue'
 import { useColorMode } from '#imports'
 
