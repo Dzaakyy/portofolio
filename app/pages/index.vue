@@ -33,7 +33,7 @@
             y: focusRect.y,
             width: focusRect.width,
             height: focusRect.height,
-            opacity: activeWordIndex >= 0 ? 1 : 0
+            opacity: activeWordIndex == null ? 0 : 1
           }"
           :transition="{
             duration: animationDuration
@@ -94,7 +94,7 @@ watch(
   activeWordIndex,
   async () => {
     const activeIndex = activeWordIndex.value;
-    if (activeIndex === null) return;
+    if (activeIndex == null) return;
 
     const containerEl = containerRef.value;
     const currentWordEl = wordRefs.value[activeIndex];
