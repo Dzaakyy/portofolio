@@ -59,7 +59,6 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, useTemplateRef } from 'vue';
-// import miniPhoto from '../../public/assets/me-Photoroom.png'
 
 interface Props {
   avatarUrl?: string;
@@ -89,9 +88,9 @@ const props = withDefaults(defineProps<Props>(), {
   className: '',
   enableTilt: true,
   miniAvatarUrl: undefined,
-  name: 'Dzaky Rahmat Nurwahid',
+  name: 'Javi A. Torres',
   title: 'Software Engineer',
-  handle: 'dzaky',
+  handle: 'javicodes',
   status: 'Online',
   contactText: 'Contact',
   showUserInfo: true
@@ -234,19 +233,14 @@ const handleContactClick = () => {
 };
 
 const handleAvatarError = (event: Event) => {
- const target = event.target as HTMLImageElement;
-  // Kita biarkan saja, atau beri log
- console.error('Avatar utama gagal dimuat:', target.src);
-  // JANGAN sembunyikan gambarnya
+  const target = event.target as HTMLImageElement;
+  target.style.display = 'none';
 };
 
 const handleMiniAvatarError = (event: Event) => {
- const target = event.target as HTMLImageElement;
- console.error('Mini avatar gagal dimuat:', target.src);
- // Opsional: Beri fallback yang jelas jika memang miniAvatarUrl berbeda dari avatarUrl
- // Jika miniAvatarUrl sama dengan avatarUrl (seperti kasusmu), maka ini tidak perlu banyak aksi
- // Kalau mau, bisa diset ke fallback icon generik jika ada, atau biarkan kosong
-//  target.src = miniPhoto; // Contoh fallback
+  const target = event.target as HTMLImageElement;
+  target.style.opacity = '0.5';
+  target.src = props.avatarUrl;
 };
 
 onMounted(() => {
@@ -633,7 +627,8 @@ onUnmounted(() => {
   height: 100%;
   object-fit: cover;
   border-radius: 50%;
-  object-position: bottom;
+  transform: scale(4.8);
+  padding-bottom: 10px;
 }
 
 .pc-user-text {

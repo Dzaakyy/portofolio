@@ -3,7 +3,7 @@
     <div>
       <h1 class="text-5xl font-bold">Ini Bagian About</h1>
       <ProfileCard name="Dzaky Rahmat N." title="Software Engineer" handle="dzaky" status="Online"
-        contact-text="Contact Me" avatar-url="/assets/me-Photoroom.png" mini-avatar-url="/assets/me-Photoroom.png" :show-user-info="true"
+        contact-text="Contact Me" avatar-url="/assets/me.jpg" :show-user-info="true"
         :show-behind-gradient="true" :enable-tilt="true" @contact-click="handleContactClick" />
     </div>
   </section>
