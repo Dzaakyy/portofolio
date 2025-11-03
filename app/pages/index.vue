@@ -4,8 +4,8 @@
     <div class="flex flex-col items-center gap-8">
 
       <div>
-        <h1 class="text-4xl md:text-5xl font-bold mb-3">
-          Mengubah Ide Menjadi Solusi Digital
+        <h1 class="text-4xl md:text-5xl font-bold mb-">
+          Hi, Welcome to my code space
         </h1>
       </div>
 
@@ -15,7 +15,7 @@
           v-for="(word, index) in words"
           :key="index"
           :ref="el => setWordRef(el as HTMLSpanElement, index)"
-          class="relative font-black text-5xl md:text-6xl transition-[filter,color] duration-300 ease-in-out cursor-pointer"
+          class="relative font-black text-3xl md:text-4xl transition-[filter,color] duration-300 ease-in-out cursor-pointer"
           :style="{
             filter: getWordStyle(word, index),
             '--border-color': borderColor,
@@ -49,20 +49,38 @@
           <span class="right-[-10px] bottom-[-10px] absolute [filter:drop-shadow(0_0_4px_var(--border-color,#fff))] border-[3px] border-[var(--border-color,#fff)] border-t-0 border-l-0 rounded-[3px] w-4 h-4 transition-none"></span>
         </motion.div>
       </div>
+      <div class="flex items-center justify-center gap-4 z-10">
+        <a 
+          href="/path/to/your-cv.pdf" download
+          class="py-2 px-5 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300"
+        >
+          Download CV
+        </a>
+        <a
+          href="mailto:dzaky@example.com" class="py-2 px-5 bg-gray-700 text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 transition-colors duration-300"
+        >
+          Let's Talk
+        </a>
+      </div>
 
     </div>
+    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/70 animate-bounce cursor-pointer">
+ <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+ <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+ </svg>
+</div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { motion } from 'motion-v';
-import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
 
-const words = ['Web', '&','Mobile', 'Developer'];
-const animatedWords = ['Web', 'Mobile'];
-const animatedIndexes = [0, 2];
+const words = ['Web', 'Mobile', 'Backend'];
+const animatedWords = ['Web', 'Mobile', 'Backend'];
+const animatedIndexes = [0, 1, 2];
 
-const blurAmount = 5;
+const blurAmount = 3;
 const borderColor = "blue";
 const glowColor = "rgba(0, 0, 255, 0.6)";
 const animationDuration = 2;
@@ -92,12 +110,12 @@ const getWordStyle = (word: string, index: number) => {
 
 watch(
   activeWordIndex,
-  async () => {
-    const activeIndex = activeWordIndex.value;
-    if (activeIndex == null) return;
-
+  async (newActiveIndex) => {
+        if (typeof newActiveIndex === 'undefined') {
+      return;
+    }
     const containerEl = containerRef.value;
-    const currentWordEl = wordRefs.value[activeIndex];
+    const currentWordEl = wordRefs.value[newActiveIndex];
     
     if (!currentWordEl || !containerEl) return;
     
@@ -112,8 +130,7 @@ watch(
       width: activeRect.width,
       height: activeRect.height
     };
-  },
-  { immediate: true }
+  }
 );
 
 const setWordRef = (el: HTMLSpanElement | null, index: number) => {
@@ -124,8 +141,29 @@ const setWordRef = (el: HTMLSpanElement | null, index: number) => {
 
 onMounted(async () => {
   await nextTick();
+
+  const initialActiveIndex = activeWordIndex.value;
+  const containerEl = containerRef.value;
+
+      if (typeof initialActiveIndex === 'undefined') {
+    return;
+  }
+
+  const initialWordEl = wordRefs.value[initialActiveIndex];
   
-  interval = setInterval(() => {
+  if (initialWordEl && containerEl) {
+    const parentRect = containerEl.getBoundingClientRect();
+    const activeRect = initialWordEl.getBoundingClientRect();
+
+    focusRect.value = {
+      x: activeRect.left - parentRect.left,
+      y: activeRect.top - parentRect.top,
+      width: activeRect.width,
+      height: activeRect.height
+    };
+  }
+
+    interval = setInterval(() => {
     currentAnimatedIndex.value = (currentAnimatedIndex.value + 1) % animatedIndexes.length;
   }, (animationDuration + pauseBetweenAnimations) * 1000);
 });

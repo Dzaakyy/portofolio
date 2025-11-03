@@ -1,9 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 html {
-  @apply bg-white text-black; /* Default (Light Mode) */
+  @apply bg-white text-black font-sans; /* Default (Light Mode) */
   @apply transition-colors duration-300;
 }
 
