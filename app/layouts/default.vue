@@ -13,6 +13,7 @@
     <main>
       <PageIndex />
       <PageAbout />
+      <PageSkills />
       <PagePortofolio />
       <PageContact />
     </main>
@@ -25,6 +26,7 @@
 
 import PageIndex from '~/pages/index.vue'
 import PageAbout from '~/pages/about.vue'
+import PageSkills from '~/pages/skills.vue'
 import PagePortofolio from '~/pages/portofolio.vue'
 import PageContact from '~/pages/contact.vue'
 import { computed } from 'vue'
