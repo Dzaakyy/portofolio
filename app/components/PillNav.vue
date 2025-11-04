@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import { gsap } from 'gsap';
-import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef, watch, nextTick } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch, nextTick } from 'vue';
 import { useColorMode } from '#imports';
+
+// Deklarasi untuk TypeScript
+declare global {
+  interface Window {
+    animateThemeTransition?: (x: number, y: number, onComplete: () => void) => void;
+  }
+}
 
 type PillNavItem = {
   label: string;
@@ -35,17 +42,18 @@ const props = withDefaults(defineProps<PillNavProps>(), {
   initialLoadAnimation: true
 });
 
-// const resolvedPillTextColor = props.pillTextColor ?? props.baseColor;
 const isMobileMenuOpen = ref(false);
 const circleRefs = ref<Array<HTMLSpanElement | null>>([]);
 const tlRefs = ref<Array<gsap.core.Timeline | null>>([]);
 const activeTweenRefs = ref<Array<gsap.core.Tween | null>>([]);
-const logoImgRef = useTemplateRef('logoImgRef');
+const logoImgRef = ref<HTMLElement | null>(null);
 const logoTweenRef = ref<gsap.core.Tween | null>(null);
-const hamburgerRef = useTemplateRef('hamburgerRef');
-const mobileMenuRef = useTemplateRef('mobileMenuRef');
-const navItemsRef = useTemplateRef('navItemsRef');
-const logoRef = useTemplateRef('logoRef');
+const hamburgerRef = ref<HTMLElement | null>(null);
+const mobileMenuRef = ref<HTMLElement | null>(null);
+const navItemsRef = ref<HTMLElement | null>(null);
+const logoRef = ref<HTMLElement | null>(null);
+const themeToggleRef = ref<HTMLElement | null>(null);
+const themeToggleTween = ref<gsap.core.Tween | null>(null);
 const colorMode = useColorMode();
 
 watch(
@@ -161,7 +169,7 @@ watch(
     props.hoveredPillTextColor,
     props.pillTextColor
   ],
-   async () => {
+  async () => {
     await nextTick();
     layout();
   },
@@ -281,15 +289,49 @@ const setCircleRef = (el: HTMLSpanElement | null, index: number) => {
   }
 };
 
+const handleThemeToggleEnter = () => {
+  const button = themeToggleRef.value;
+  if (!button) return;
+
+  themeToggleTween.value?.kill();
+
+  themeToggleTween.value = gsap.to(button, {
+    scale: 1.1,
+    rotation: 90,
+    duration: 0.4,
+    ease: "back.out(1.7)",
+    overwrite: 'auto'
+  });
+};
+
+const handleThemeToggleLeave = () => {
+  const button = themeToggleRef.value;
+  if (!button) return;
+
+  themeToggleTween.value?.kill();
+
+  themeToggleTween.value = gsap.to(button, {
+    scale: 1,
+    rotation: 0,
+    duration: 0.3,
+    ease: "power2.out",
+    overwrite: 'auto'
+  });
+};
+
 const toggleTheme = (event: MouseEvent) => {
- const x = event.clientX
- const y = event.clientY
+  const x = event.clientX;
+  const y = event.clientY;
 
- document.documentElement.style.setProperty('--clip-x', `${x}px`)
- document.documentElement.style.setProperty('--clip-y', `${y}px`)
-
-colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
+  if (window.animateThemeTransition) {
+    window.animateThemeTransition(x, y, () => {
+      colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark';
+    });
+  } else {
+    colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark';
+  }
 }
+
 </script>
 
 <template>
@@ -314,7 +356,7 @@ colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
         height: 'var(--nav-h)',
         background: 'var(--base, #000)',
         'backdrop-filter': 'blur(10px)',
-          '-webkit-backdrop-filter': 'blur(10px)'
+        '-webkit-backdrop-filter': 'blur(10px)'
       }">
         <ul role="menubar" class="flex items-stretch m-0 p-[3px] h-full list-none" :style="{ gap: 'var(--pill-gap)' }">
           <li v-for="(item, i) in items" :key="item.href || `item-${i}`" class="flex h-full" role="none">
@@ -349,18 +391,20 @@ colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
             </component>
           </li>
         </ul>
-          <button @click="toggleTheme($event)" aria-label="Ganti Tema" class="theme-toggle-button" :style="{ background: 'var(--pill-bg)', color: 'var(--pill-text)' }">
-            <svg v-if="colorMode.value === 'dark'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-            </svg>
+        <button ref="themeToggleRef" @click="toggleTheme($event)" @mouseenter="handleThemeToggleEnter"
+          @mouseleave="handleThemeToggleLeave" aria-label="Ganti Tema" class="theme-toggle-button"
+          :style="{ background: 'var(--pill-bg)', color: 'var(--pill-text)' }">
+          <svg v-if="colorMode.value === 'dark'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+            stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+          </svg>
 
-            <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-6.364-.386l1.591-1.591M3 12h2.25m.386-6.364l1.591 1.591M12 12a2.25 2.25 0 00-2.25 2.25 2.25 2.25 0 002.25 2.25 2.25 2.25 0 002.25-2.25A2.25 2.25 0 0012 12z" />
-            </svg>
+          <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-6.364-.386l1.591-1.591M3 12h2.25m.386-6.364l1.591 1.591M12 12a2.25 2.25 0 00-2.25 2.25 2.25 2.25 0 002.25 2.25 2.25 2.25 0 002.25-2.25A2.25 2.25 0 0012 12z" />
+          </svg>
         </button>
       </div>
 
@@ -413,6 +457,7 @@ colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
   </div>
 </template>
 
+
 <style scoped>
 .theme-toggle-button {
   display: inline-flex;
@@ -425,8 +470,8 @@ colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
   margin-left: 5px;
   cursor: pointer;
   border: none;
-
-  transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+  transform-origin: center;
+  /* transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1); */
 }
 
 .theme-toggle-button:hover {
