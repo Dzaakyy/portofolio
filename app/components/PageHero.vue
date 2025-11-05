@@ -56,18 +56,27 @@
             </div>
 
         </div>
-        <a href="#about" class="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/70 animate-bounce cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-            </svg>
-        </a>
+       <a href="#about" 
+       ref="arrowRef" 
+       @click.prevent="scrollToAbout"
+       class="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/70 animate-bounce cursor-pointer">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+        stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+      </svg>
+    </a>
     </div>
 </template>
 
 <script setup lang="ts">
 import { motion } from 'motion-v';
 import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue';
+import { gsap } from 'gsap';
+// 1. Impor ScrollToPlugin
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
+
+// Daftarkan plugin
+gsap.registerPlugin(ScrollToPlugin);
 
 const words = ['Web', 'Mobile', 'Backend'];
 const animatedWords = ['Web', 'Mobile', 'Backend'];
@@ -87,83 +96,109 @@ const wordRefs = ref<HTMLSpanElement[]>([]);
 const focusRect = ref({ x: 0, y: 0, width: 0, height: 0 });
 let interval: number | null = null;
 
+// Referensi untuk animasi onMounted
+const titleRef = ref<HTMLElement | null>(null);
+const buttonsRef = ref<HTMLElement | null>(null);
+const arrowRef = ref<HTMLElement | null>(null);
+
+const scrollToAbout = () => {
+  gsap.to(window, {
+    duration: 1.5,
+    scrollTo: "#about",
+    ease: "power2.inOut"
+  });
+};
+
 const getWordStyle = (word: string, index: number) => {
-    const isStatic = !animatedWords.includes(word);
-    if (isStatic) {
-        return 'blur(0px)';
-    }
-
-
-    if (index !== activeWordIndex.value) {
-        return `blur(${blurAmount}px)`;
-    }
-
+  const isStatic = !animatedWords.includes(word);
+  if (isStatic) {
     return 'blur(0px)';
+  }
+
+  if (index !== activeWordIndex.value) {
+    return `blur(${blurAmount}px)`;
+  }
+
+  return 'blur(0px)';
 };
 
 watch(
-    activeWordIndex,
-    async (newActiveIndex) => {
-        if (typeof newActiveIndex === 'undefined') {
-            return;
-        }
-        const containerEl = containerRef.value;
-        const currentWordEl = wordRefs.value[newActiveIndex];
-
-        if (!currentWordEl || !containerEl) return;
-
-        await nextTick();
-
-        const parentRect = containerEl.getBoundingClientRect();
-        const activeRect = currentWordEl.getBoundingClientRect();
-
-        focusRect.value = {
-            x: activeRect.left - parentRect.left,
-            y: activeRect.top - parentRect.top,
-            width: activeRect.width,
-            height: activeRect.height
-        };
+  activeWordIndex,
+  async (newActiveIndex) => {
+    if (typeof newActiveIndex === 'undefined') {
+      return;
     }
+    const containerEl = containerRef.value;
+    const currentWordEl = wordRefs.value[newActiveIndex];
+
+    if (!currentWordEl || !containerEl) return;
+
+    await nextTick();
+
+    const parentRect = containerEl.getBoundingClientRect();
+    const activeRect = currentWordEl.getBoundingClientRect();
+
+    focusRect.value = {
+      x: activeRect.left - parentRect.left,
+      y: activeRect.top - parentRect.top,
+      width: activeRect.width,
+      height: activeRect.height
+    };
+  }
 );
 
 const setWordRef = (el: HTMLSpanElement | null, index: number) => {
-    if (el) {
-        wordRefs.value[index] = el;
-    }
+  if (el) {
+    wordRefs.value[index] = el;
+  }
 };
 
 onMounted(async () => {
-    await nextTick();
+  await nextTick();
 
-    const initialActiveIndex = activeWordIndex.value;
-    const containerEl = containerRef.value;
+  const initialActiveIndex = activeWordIndex.value;
+  const containerEl = containerRef.value;
 
-    if (typeof initialActiveIndex === 'undefined') {
-        return;
+  if (typeof initialActiveIndex === 'undefined') {
+    return;
+  }
+
+  const initialWordEl = wordRefs.value[initialActiveIndex];
+
+  if (initialWordEl && containerEl) {
+    const parentRect = containerEl.getBoundingClientRect();
+    const activeRect = initialWordEl.getBoundingClientRect();
+
+    focusRect.value = {
+      x: activeRect.left - parentRect.left,
+      y: activeRect.top - parentRect.top,
+      width: activeRect.width,
+      height: activeRect.height
+    };
+  }
+
+  interval = setInterval(() => {
+    currentAnimatedIndex.value = (currentAnimatedIndex.value + 1) % animatedIndexes.length;
+  }, (animationDuration + pauseBetweenAnimations) * 1000);
+
+  const tl = gsap.timeline({
+    defaults: {
+      duration: 0.8,
+      ease: 'power3.out',
+      opacity: 0,
+      y: 30
     }
+  });
 
-    const initialWordEl = wordRefs.value[initialActiveIndex];
-
-    if (initialWordEl && containerEl) {
-        const parentRect = containerEl.getBoundingClientRect();
-        const activeRect = initialWordEl.getBoundingClientRect();
-
-        focusRect.value = {
-            x: activeRect.left - parentRect.left,
-            y: activeRect.top - parentRect.top,
-            width: activeRect.width,
-            height: activeRect.height
-        };
-    }
-
-    interval = setInterval(() => {
-        currentAnimatedIndex.value = (currentAnimatedIndex.value + 1) % animatedIndexes.length;
-    }, (animationDuration + pauseBetweenAnimations) * 1000);
+  tl.from(titleRef.value, {})
+    .from(containerRef.value, {}, '-=0.6')
+    .from(buttonsRef.value, {}, '-=0.6')
+    .from(arrowRef.value, { opacity: 0, y: 0, duration: 1.5, ease: 'sine.inOut' }, '+=0.2');
 });
 
 onUnmounted(() => {
-    if (interval) {
-        clearInterval(interval);
-    }
+  if (interval) {
+    clearInterval(interval);
+  }
 });
 </script>

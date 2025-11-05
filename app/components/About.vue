@@ -20,7 +20,9 @@
       </div>
 
       <div class="md:w-1/2 flex justify-center md:justify-end">
-        <ProfileCard name="Dzaky Rahmat N." title="Software Engineer" handle="dzaky" status="Online"
+        <ProfileCard  
+        handle="dzaky" 
+        status="Online"
           contact-text="Contact Me" avatar-url="/assets/me.jpg" :show-user-info="true" :show-behind-gradient="true"
           :enable-tilt="true" @contact-click="handleContactClick" />
       </div>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { gsap } from 'gsap';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { computed, onBeforeUnmount, onMounted, ref, watch, nextTick } from 'vue';
 import { useColorMode } from '#imports';
 
@@ -9,6 +10,8 @@ declare global {
     animateThemeTransition?: (x: number, y: number, onComplete: () => void) => void;
   }
 }
+
+gsap.registerPlugin(ScrollToPlugin);
 
 type PillNavItem = {
   label: string;
@@ -324,6 +327,35 @@ const toggleTheme = (event: MouseEvent) => {
   }
 }
 
+const handleNavItemClick = (event: MouseEvent, href?: string) => {
+  if (!href || isRouterLink(href)) {
+    // Jika tidak ada href, atau jika ini adalah RouterLink (link internal Nuxt),
+    // biarkan RouterLink menanganinya.
+    return;
+  }
+
+  // Sekarang kita tahu ini adalah tag <a>, cek apakah ini hash link
+  if (href.startsWith('#')) {
+    event.preventDefault(); // Hentikan perilaku 'lompat' bawaan
+
+    // Tentukan target scroll. Jika hanya '#', scroll ke atas (0)
+    const target = href === '#' ? 0 : href;
+
+    // Lakukan animasi smooth scroll
+    gsap.to(window, {
+      duration: 1.5, // Atur durasi slide
+      scrollTo: target,
+      ease: 'power2.inOut' // Easing untuk efek halus
+    });
+
+    // Jika menu mobile terbuka, tutup setelah diklik
+    if (isMobileMenuOpen.value) {
+      toggleMobileMenu();
+    }
+  }
+  // Jika ini link eksternal (http://...), biarkan browser menanganinya
+};
+
 </script>
 
 <template>
@@ -358,7 +390,7 @@ const toggleTheme = (event: MouseEvent) => {
             <component :is="isRouterLink(item.href) ? 'RouterLink' : 'a'"
               :to="isRouterLink(item.href) ? item.href : undefined"
               :href="!isRouterLink(item.href) ? item.href : undefined"
-              class="inline-flex box-border relative justify-center items-center px-0 rounded-full h-full overflow-hidden font-semibold text-[16px] no-underline uppercase leading-[0] tracking-[0.2px] whitespace-nowrap cursor-pointer"
+              class="inline-flex box-border relative justify-center items-center px-0 rounded-full h-full overflow-hidden font-semibold text-[16px] no-underline uppercase leading-[0] tracking-[0.2px] whitespace-n-nowrap cursor-pointer"
               :class="[
                 'bg-white/60 dark:bg-black/60',
                 'text-black dark:text-white',
@@ -366,7 +398,8 @@ const toggleTheme = (event: MouseEvent) => {
               ]" :style="{
                 paddingLeft: 'var(--pill-pad-x)',
                 paddingRight: 'var(--pill-pad-x)'
-              }" :aria-label="item.ariaLabel || item.label" @mouseenter="handleEnter(i)" @mouseleave="handleLeave(i)">
+              }" :aria-label="item.ariaLabel || item.label" @mouseenter="handleEnter(i)" @mouseleave="handleLeave(i)"
+              @click=" handleNavItemClick($event, item.href)">
               <span class="block bottom-0 left-1/2 z-[1] absolute rounded-full pointer-events-none hover-circle" :class="[
                 'bg-white/30 dark:bg-black/30 '
               ]" :style="{ willChange: 'transform' }" aria-hidden="true"
@@ -385,6 +418,7 @@ const toggleTheme = (event: MouseEvent) => {
                 class="-bottom-[6px] left-1/2 z-[4] absolute rounded-full w-3 h-3 -translate-x-1/2" :class="[
                   'bg-black/50 dark:bg-black/50'
                 ]" aria-hidden="true" />
+
             </component>
           </li>
         </ul>
@@ -448,10 +482,9 @@ const toggleTheme = (event: MouseEvent) => {
             class="block px-4 py-3 rounded-[50px] font-medium text-[16px] transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)]"
             :class="[
               'bg-black/40 dark:bg-white/40',
-              'text-white dark:text-black', // Dibalik warna teks menu mobile
+              'text-white dark:text-black',
               'hover:bg-black/60 dark:hover:bg-white/60'
-            ]">
-            {{ item.label }}
+            ]" @click=" handleNavItemClick($event, item.href)"> {{ item.label }}
           </component>
         </li>
       </ul>

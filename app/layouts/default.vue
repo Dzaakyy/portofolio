@@ -21,7 +21,6 @@
 import { computed, onMounted, ref } from 'vue'
 import { useColorMode } from '#imports'
 import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 useHead({
   script: [
@@ -89,7 +88,6 @@ const animateThemeTransition = (x: number, y: number, onComplete: () => void) =>
 }
 
 onMounted(() => {
-  gsap.registerPlugin(ScrollTrigger)
   window.animateThemeTransition = animateThemeTransition
 })
 </script>
