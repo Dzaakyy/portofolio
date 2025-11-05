@@ -1,4 +1,3 @@
-// nuxt.config.ts
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
@@ -7,10 +6,8 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss'
   ],
   colorMode: {
-    preference: 'light',
-    classSuffix: ''
+    preference: 'system',
+    fallback: 'light',
+    classSuffix: '', 
   },
-  experimental: {
-    viewTransition: true
-  }
 })

@@ -4,12 +4,22 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Perbaikan: Tambahkan !important untuk memastikan tema diterapkan */
 html {
-  @apply bg-white text-black font-sans; /* Default (Light Mode) */
+  @apply bg-white text-black font-sans !important; /* Default (Light Mode) */
 }
 
 html.dark {
-  @apply bg-black text-white; /* Dark Mode */
+  @apply bg-black text-white !important; /* Dark Mode */
+}
+
+/* Perbaikan: Tambahkan CSS untuk mencegah flash of incorrect theme */
+html, body {
+  color-scheme: light;
+}
+
+html.dark, html.dark body {
+  color-scheme: dark;
 }
 
 :root {
@@ -40,6 +50,24 @@ html.dark {
   pointer-events: none;
 }
 
-* {
+/* * {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease !important;
+} */
+
+body, div, span, p, h1, h2, h3, h4, h5, h6, a, button, input, textarea, select {
+  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.theme-toggle-button .sun-icon {
+  display: block;
+}
+.theme-toggle-button .moon-icon {
+  display: none;
+}
+
+html.dark .theme-toggle-button .sun-icon {
+  display: none;
+}
+html.dark .theme-toggle-button .moon-icon {
+  display: block;
 }

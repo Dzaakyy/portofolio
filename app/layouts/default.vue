@@ -9,8 +9,7 @@
         { label: 'About', href: '#about' },
         { label: 'Portofolio', href: '#portofolio' },
         { label: 'Contact', href: '#contact' }
-    ]" activeHref="/" :baseColor="baseColor" :pillColor="pillColor" :hoveredPillTextColor="hoveredPillTextColor"
-        :pillTextColor="pillTextColor" />
+    ]" activeHref="/" />
 
     <main>
       <PageIndex />
@@ -32,6 +31,26 @@ import { computed, onMounted, ref } from 'vue'
 import { useColorMode } from '#imports'
 import { gsap } from 'gsap'
 
+useHead({
+  script: [
+    {
+      innerHTML: `
+        (function() {
+          var theme = localStorage.getItem('nuxt-color-mode') || 'system';
+          if (theme === 'system') {
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        })();
+      `
+    }
+  ]
+})
+
 declare global {
   interface Window {
     animateThemeTransition?: (x: number, y: number, onComplete: () => void) => void;
@@ -40,19 +59,6 @@ declare global {
 
 const colorMode = useColorMode()
 const themeTransitionRef = ref<HTMLElement | null>(null)
-
-const baseColor = computed(() => {
-    return colorMode.value === 'dark' ? 'rgba(0, 0, 0, 0.15)' : 'rgba(255, 255, 255, 0.1)'
-})
-const pillColor = computed(() => {
-    return colorMode.value === 'dark' ? '#ffffff' : '#000000'
-})
-const hoveredPillTextColor = computed(() => {
-    return colorMode.value === 'dark' ? '#000000' : '#ffffff'
-})
-const pillTextColor = computed(() => {
-    return colorMode.value === 'dark' ? '#000000' : '#ffffff'
-})
 
 const auroraColors = computed(() => {
     if (colorMode.value === 'dark') {
@@ -78,7 +84,6 @@ const animateThemeTransition = (x: number, y: number, onComplete: () => void) =>
         ease: "power3.inOut",
         onComplete: () => {
             onComplete()
-            
             gsap.to(overlay, {
                 clipPath: `circle(0% at ${x}px ${y}px)`,
                 duration: 0.6,

@@ -35,10 +35,6 @@ const props = withDefaults(defineProps<PillNavProps>(), {
   logoAlt: 'Logo',
   className: '',
   ease: 'power3.easeOut',
-  baseColor: '#fff',
-  pillColor: '#060010',
-  hoveredPillTextColor: '#060010',
-  pillTextColor: '#fff',
   initialLoadAnimation: true
 });
 
@@ -273,10 +269,6 @@ const isExternalLink = (href: string) =>
 const isRouterLink = (href?: string) => href && !isExternalLink(href);
 
 const cssVars = computed(() => ({
-  '--base': props.baseColor,
-  '--pill-bg': props.pillColor,
-  '--hover-text': props.hoveredPillTextColor,
-  '--pill-text': props.pillTextColor,
   '--nav-h': '42px',
   '--logo': '36px',
   '--pill-pad-x': '18px',
@@ -336,8 +328,9 @@ const toggleTheme = (event: MouseEvent) => {
 
 <template>
   <div class="top-[1em] left-0 z-[1000] fixed w-full md:w-auto md:left-1/2 md:-translate-x-1/2">
+
     <nav
-      :class="['w-full md:w-max flex items-center justify-between md:justify-start box-border px-4 md:px-0', className]"
+      :class="['w-full md:w-max flex items-center justify-between md:justify-start box-border px-4 md:px-0 relative', className]"
       aria-label="Primary" :style="cssVars">
       <component v-if="logo" :is="isRouterLink(items?.[0]?.href) ? 'RouterLink' : 'a'"
         :to="isRouterLink(items?.[0]?.href) ? items[0]?.href : undefined"
@@ -345,63 +338,70 @@ const toggleTheme = (event: MouseEvent) => {
         ref="logoRef" class="inline-flex justify-center items-center p-2 rounded-full overflow-hidden" :style="{
           width: 'var(--nav-h)',
           height: 'var(--nav-h)',
-          background: 'var(--base, #000)',
-          'backdrop-filter': 'blur(10px)',
-          '-webkit-backdrop-filter': 'blur(10px)'
-        }" @mouseenter="handleLogoEnter">
+        }" :class="[
+          'bg-white/20 dark:bg-black/20',
+          'backdrop-filter:blur-md',
+          '-webkit-backdrop-filter:blur-md',
+          'border border-white/20 dark:border-black/20'
+        ]" @mouseenter="handleLogoEnter">
         <img :src="logo" :alt="logoAlt" ref="logoImgRef" class="block w-full h-full object-cover" />
       </component>
 
-      <div ref="navItemsRef" class="hidden relative md:flex items-center ml-2 rounded-full" :style="{
-        height: 'var(--nav-h)',
-        background: 'var(--base, #000)',
-        'backdrop-filter': 'blur(10px)',
-        '-webkit-backdrop-filter': 'blur(10px)'
-      }">
+      <div ref="navItemsRef" class="hidden relative md:flex items-center rounded-full" :class="[
+        'bg-white/20 dark:bg-black/20',
+        'backdrop-filter:blur-md',
+        '-webkit-backdrop-filter:blur-md',
+        'border border-white/20 dark:border-black/20'
+      ]" :style="{ height: 'var(--nav-h)' }">
         <ul role="menubar" class="flex items-stretch m-0 p-[3px] h-full list-none" :style="{ gap: 'var(--pill-gap)' }">
           <li v-for="(item, i) in items" :key="item.href || `item-${i}`" class="flex h-full" role="none">
             <component :is="isRouterLink(item.href) ? 'RouterLink' : 'a'"
               :to="isRouterLink(item.href) ? item.href : undefined"
               :href="!isRouterLink(item.href) ? item.href : undefined"
               class="inline-flex box-border relative justify-center items-center px-0 rounded-full h-full overflow-hidden font-semibold text-[16px] no-underline uppercase leading-[0] tracking-[0.2px] whitespace-nowrap cursor-pointer"
-              :style="{
-                background: 'var(--pill-bg, #fff)',
-                color: 'var(--pill-text, var(--base, #000))',
+              :class="[
+                'bg-white/60 dark:bg-black/60',
+                'text-black dark:text-white',
+                'hover:bg-white/60 dark:hover:bg-black/60'
+              ]" :style="{
                 paddingLeft: 'var(--pill-pad-x)',
                 paddingRight: 'var(--pill-pad-x)'
               }" :aria-label="item.ariaLabel || item.label" @mouseenter="handleEnter(i)" @mouseleave="handleLeave(i)">
-              <span class="block bottom-0 left-1/2 z-[1] absolute rounded-full pointer-events-none hover-circle" :style="{
-                background: 'var(--base, #000)',
-                willChange: 'transform'
-              }" aria-hidden="true" :ref="el => setCircleRef(el as HTMLSpanElement, i)" />
+              <span class="block bottom-0 left-1/2 z-[1] absolute rounded-full pointer-events-none hover-circle" :class="[
+                'bg-white/30 dark:bg-black/30 '
+              ]" :style="{ willChange: 'transform' }" aria-hidden="true"
+                :ref="el => setCircleRef(el as HTMLSpanElement, i)" />
               <span class="inline-block z-[2] relative leading-[1] label-stack">
                 <span class="inline-block z-[2] relative leading-[1] pill-label" :style="{ willChange: 'transform' }">
                   {{ item.label }}
                 </span>
-                <span class="inline-block top-0 left-0 z-[3] absolute pill-label-hover" :style="{
-                  color: 'var(--hover-text, #fff)',
-                  willChange: 'transform, opacity'
-                }" aria-hidden="true">
+                <span class="inline-block top-0 left-0 z-[3] absolute pill-label-hover" :class="[
+                  'text-black dark:text-white'
+                ]" :style="{ willChange: 'transform, opacity' }" aria-hidden="true">
                   {{ item.label }}
                 </span>
               </span>
               <span v-if="activeHref === item.href"
-                class="-bottom-[6px] left-1/2 z-[4] absolute rounded-full w-3 h-3 -translate-x-1/2"
-                :style="{ background: 'var(--base, #000)' }" aria-hidden="true" />
+                class="-bottom-[6px] left-1/2 z-[4] absolute rounded-full w-3 h-3 -translate-x-1/2" :class="[
+                  'bg-black/50 dark:bg-black/50'
+                ]" aria-hidden="true" />
             </component>
           </li>
         </ul>
         <button ref="themeToggleRef" @click="toggleTheme($event)" @mouseenter="handleThemeToggleEnter"
-          @mouseleave="handleThemeToggleLeave" aria-label="Ganti Tema" class="theme-toggle-button"
-          :style="{ background: 'var(--pill-bg)', color: 'var(--pill-text)' }">
-          <svg v-if="colorMode.value === 'dark'" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-            stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+          @mouseleave="handleThemeToggleLeave" aria-label="Ganti Tema" class="theme-toggle-button" :class="[
+            'bg-white/40 dark:bg-black/40',
+            'text-black dark:text-white',
+            'hover:bg-white/60 dark:hover:bg-black/60'
+          ]">
+          <svg class="moon-icon w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+            stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
           </svg>
 
-          <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-            stroke="currentColor" class="w-5 h-5">
+          <svg class="sun-icon w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+            stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round"
               d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-6.364-.386l1.591-1.591M3 12h2.25m.386-6.364l1.591 1.591M12 12a2.25 2.25 0 00-2.25 2.25 2.25 2.25 0 002.25 2.25 2.25 2.25 0 002.25-2.25A2.25 2.25 0 0012 12z" />
           </svg>
@@ -410,45 +410,47 @@ const toggleTheme = (event: MouseEvent) => {
 
       <button ref="hamburgerRef" @click="toggleMobileMenu" aria-label="Toggle menu" :aria-expanded="isMobileMenuOpen"
         class="md:hidden relative flex flex-col justify-center items-center gap-1 p-0 border-0 rounded-full cursor-pointer"
-        :style="{
+        :class="[
+          'bg-white/20 dark:bg-black/20',
+          'backdrop-filter:blur-md',
+          '-webkit-backdrop-filter:blur-md',
+          'border border-white/20 dark:border-black/20'
+        ]" :style="{
           width: 'var(--nav-h)',
           height: 'var(--nav-h)',
-          background: 'var(--base, #000)',
-          'backdrop-filter': 'blur(10px)',
-          '-webkit-backdrop-filter': 'blur(10px)'
         }">
         <span
           class="rounded w-4 h-0.5 origin-center transition-all duration-[10ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] hamburger-line"
-          :style="{ background: 'var(--pill-bg, #fff)' }" />
+          :class="[
+            'bg-black dark:bg-white' // Dibalik warna garis hamburger
+          ]" />
         <span
           class="rounded w-4 h-0.5 origin-center transition-all duration-[10ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] hamburger-line"
-          :style="{ background: 'var(--pill-bg, #fff)' }" />
+          :class="[
+            'bg-black dark:bg-white' // Dibalik warna garis hamburger
+          ]" />
       </button>
     </nav>
 
     <div ref="mobileMenuRef"
       class="md:hidden top-[3em] right-4 left-4 z-[998] absolute shadow-[0_8px_32px_rgba(0,0,0,0.12)] rounded-[27px] origin-top"
-      :style="{
-        ...cssVars,
-        background: 'var(--base, #f0f0f0)'
-      }">
+      :class="[
+        'bg-white/20 dark:bg-black/20',
+        'backdrop-filter:blur-md',
+        '-webkit-backdrop-filter:blur-md',
+        'border border-white/20 dark:border-black/20'
+      ]">
       <ul class="flex flex-col gap-[3px] m-0 p-[3px] list-none">
         <li v-for="item in items" :key="item.href || `mobile-${item.label}`">
           <component :is="isRouterLink(item.href) ? 'RouterLink' : 'a'"
             :to="isRouterLink(item.href) ? item.href : undefined"
             :href="!isRouterLink(item.href) ? item.href : undefined"
             class="block px-4 py-3 rounded-[50px] font-medium text-[16px] transition-all duration-200 ease-[cubic-bezier(0.25,0.1,0.25,1)]"
-            :style="{ background: 'var(--pill-bg, #fff)', color: 'var(--pill-text, #fff)' }" @mouseenter="
-              (e: MouseEvent) => {
-                (e.currentTarget as HTMLAnchorElement).style.background = 'var(--base)';
-                (e.currentTarget as HTMLAnchorElement).style.color = 'var(--hover-text, #fff)';
-              }
-            " @mouseleave="
-              (e: MouseEvent) => {
-                (e.currentTarget as HTMLAnchorElement).style.background = 'var(--pill-bg, #fff)';
-                (e.currentTarget as HTMLAnchorElement).style.color = 'var(--pill-text, #fff)';
-              }
-            ">
+            :class="[
+              'bg-black/40 dark:bg-white/40',
+              'text-white dark:text-black', // Dibalik warna teks menu mobile
+              'hover:bg-black/60 dark:hover:bg-white/60'
+            ]">
             {{ item.label }}
           </component>
         </li>
@@ -456,7 +458,6 @@ const toggleTheme = (event: MouseEvent) => {
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .theme-toggle-button {
@@ -471,15 +472,41 @@ const toggleTheme = (event: MouseEvent) => {
   cursor: pointer;
   border: none;
   transform-origin: center;
-  /* transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1); */
-}
-
-.theme-toggle-button:hover {
-  transform: scale(1.1) rotate(90deg);
 }
 
 .theme-toggle-button svg {
   width: 1.25rem;
   height: 1.25rem;
+}
+
+nav::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 100px;
+  z-index: -1;
+}
+
+html.dark nav::before {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+html.dark nav::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, rgba(120, 120, 255, 0.15) 0%, transparent 70%);
+  border-radius: 100px;
+  z-index: -1;
+  pointer-events: none;
 }
 </style>
