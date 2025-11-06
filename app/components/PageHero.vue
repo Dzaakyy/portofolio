@@ -44,16 +44,6 @@
                         class="right-[-10px] bottom-[-10px] absolute [filter:drop-shadow(0_0_4px_var(--border-color,#fff))] border-[3px] border-[var(--border-color,#fff)] border-t-0 border-l-0 rounded-[3px] w-4 h-4 transition-none"></span>
                 </motion.div>
             </div>
-            <div class="flex items-center justify-center gap-4 z-10">
-                <a href="/path/to/your-cv.pdf" download
-                    class="py-2 px-5 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-300">
-                    Download CV
-                </a>
-                <a href="mailto:dzaky@example.com"
-                    class="py-2 px-5 bg-gray-700 text-white font-semibold rounded-lg shadow-md hover:bg-gray-800 transition-colors duration-300">
-                    Let's Talk
-                </a>
-            </div>
 
         </div>
        <a href="#about" 
