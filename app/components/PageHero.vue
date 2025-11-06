@@ -167,7 +167,7 @@ onMounted(async () => {
     };
   }
 
-  interval = setInterval(() => {
+  interval = window.setInterval(() => {
     currentAnimatedIndex.value = (currentAnimatedIndex.value + 1) % animatedIndexes.length;
   }, (animationDuration + pauseBetweenAnimations) * 1000);
 
@@ -188,7 +188,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
   if (interval) {
-    clearInterval(interval);
+    window.clearInterval(interval);
   }
 });
 </script>
