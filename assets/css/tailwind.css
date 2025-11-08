@@ -4,16 +4,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Perbaikan: Tambahkan !important untuk memastikan tema diterapkan */
 html {
-  @apply bg-white text-black font-sans !important; /* Default (Light Mode) */
+  @apply bg-white text-black font-sans !important;
 }
 
 html.dark {
-  @apply bg-black text-white !important; /* Dark Mode */
+  @apply bg-black text-white !important;
 }
 
-/* Perbaikan: Tambahkan CSS untuk mencegah flash of incorrect theme */
 html, body {
   color-scheme: light;
 }

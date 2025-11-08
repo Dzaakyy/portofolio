@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="min-h-screen flex flex-col">
     <div ref="themeTransitionRef" class="theme-transition-overlay"></div>
 
     <Aurora :color-stops="auroraColors" :amplitude="1.0" :blend="0.5" :speed="1.0" :intensity="1.0" />
@@ -11,9 +11,11 @@
       { label: 'Contact', href: '#contact' }
     ]" activeHref="/" />
 
-    <main>
+    <main class="flex-grow">
       <slot />
     </main>
+    
+    <Footer />
   </div>
 </template>
 
@@ -21,6 +23,8 @@
 import { computed, onMounted, ref } from 'vue'
 import { useColorMode } from '#imports'
 import { gsap } from 'gsap'
+
+import Footer from '@/components/Footer.vue'
 
 useHead({
   script: [
