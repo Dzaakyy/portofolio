@@ -424,7 +424,7 @@ const handleNavItemClick = (event: MouseEvent, href?: string) => {
         </ul>
         <button ref="themeToggleRef" @click="toggleTheme($event)" @mouseenter="handleThemeToggleEnter"
           @mouseleave="handleThemeToggleLeave" aria-label="Ganti Tema" class="theme-toggle-button" :class="[
-            'bg-white/40 dark:bg-black/40',
+            'bg-white/60 dark:bg-black/60',
             'text-black dark:text-white',
             'hover:bg-white/60 dark:hover:bg-black/60'
           ]">
@@ -456,12 +456,12 @@ const handleNavItemClick = (event: MouseEvent, href?: string) => {
         <span
           class="rounded w-4 h-0.5 origin-center transition-all duration-[10ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] hamburger-line"
           :class="[
-            'bg-black dark:bg-white' // Dibalik warna garis hamburger
+            'bg-black dark:bg-white'
           ]" />
         <span
           class="rounded w-4 h-0.5 origin-center transition-all duration-[10ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] hamburger-line"
           :class="[
-            'bg-black dark:bg-white' // Dibalik warna garis hamburger
+            'bg-black dark:bg-white'
           ]" />
       </button>
     </nav>

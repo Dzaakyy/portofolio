@@ -14,7 +14,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8" ref="gridRef">
         
         <div 
-          v-for="project in displayedProjects" 
+          v-for="(project, index) in allProjects" 
           :key="project.id" 
           class="portfolio-item group bg-white dark:bg-gray-800 rounded-xl shadow-lg 
                  transition-all duration-300 hover:shadow-2xl 
@@ -23,6 +23,8 @@
                  after:opacity-0 group-hover:after:opacity-100 after:transition-opacity after:duration-500 group-hover:after:animate-spin
                  hover:shadow-purple-500/50 dark:hover:shadow-blue-500/50
                  will-change-transform" 
+          :data-index="index"
+          :ref="el => setPortfolioItemRef(el, index)"
         >
           <!-- Content Container -->
           <div class="relative z-10 bg-white dark:bg-gray-800 rounded-xl h-full flex flex-col overflow-hidden">
@@ -81,24 +83,6 @@
           </div>
         </div>
         
-      </div> 
-      
-      <div class="text-center mt-16" v-if="hasMore">
-        <button 
-          @click="loadMore"
-          ref="loadMoreBtn"
-          class="load-more-btn px-8 py-3 font-bold 
-                 bg-transparent border-2 
-                 border-gray-900 text-gray-900
-                 dark:border-gray-300 dark:text-gray-300
-                 transform 
-                 hover:bg-gray-900 hover:text-white 
-                 dark:hover:bg-gray-300 dark:hover:text-gray-900
-                 hover:-translate-y-1
-                 rounded-full transition-all duration-500"
-        >
-          Tampilkan Lebih Banyak
-        </button>
       </div>
       
     </div>
@@ -106,18 +90,18 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick, onUnmounted } from 'vue'
+import { ref, onMounted, nextTick, onUnmounted } from 'vue'
 
 const portfolioSection = ref(null)
 const titleRef = ref(null)
 const subtitleRef = ref(null)
 const gridRef = ref(null)
-const loadMoreBtn = ref(null)
+const portfolioItemRefs = ref([])
 
-let hasAnimated = false
+let hasAnimatedTitle = false
 let observer = null
-
-const INITIAL_LOAD = 6
+let itemObservers = []
+let animatedItems = new Set()
 
 const allProjects = ref([
   { id: 1, title: 'Chat Application', description: 'Aplikasi obrolan real-time...', imageUrl: 'https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?ixlib=rb-4.0.3&auto=format&fit-crop&w=800&q=60', tags: ['Node.js', 'Vue.js', 'Socket.io'], githubUrl: '#', liveUrl: '#' },
@@ -128,82 +112,78 @@ const allProjects = ref([
   { id: 6, title: 'Proyek Ke-6', description: 'Deskripsi singkat proyek ke-6...', imageUrl: 'https://images.unsplash.com/photo-1522204523234-8729aa6e3d5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60', tags: ['Figma', 'Vue.js'], githubUrl: '#', liveUrl: '#' },
   { id: 7, title: 'Proyek Ke-7', description: 'Deskripsi singkat proyek ke-7...', imageUrl: 'https://images.unsplash.com/photo-1547082299-de196ea013d6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60', tags: ['React', 'Node.js'], githubUrl: '#', liveUrl: '#' },
   { id: 8, title: 'Proyek Ke-8', description: 'Deskripsi singkat proyek ke-8...', imageUrl: 'https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60', tags: ['PHP', 'MySQL'], githubUrl: '#', liveUrl: '#' },
+  { id: 9, title: 'Proyek Ke-9', description: 'Deskripsi singkat proyek ke-9...', imageUrl: 'https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60', tags: ['Vue.js', 'Firebase'], githubUrl: '#', liveUrl: '#' },
+  { id: 10, title: 'Proyek Ke-10', description: 'Deskripsi singkat proyek ke-10...', imageUrl: 'https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60', tags: ['React', 'MongoDB'], githubUrl: '#', liveUrl: '#' },
 ])
 
-const numDisplayed = ref(INITIAL_LOAD)
-
-const displayedProjects = computed(() => {
-  return allProjects.value.slice(0, numDisplayed.value)
-})
-
-const hasMore = computed(() => {
-  return numDisplayed.value < allProjects.value.length
-})
-
-function loadMore() {
-  numDisplayed.value = allProjects.value.length
-}
-
-const initializeAnimationState = () => {
-  if (!titleRef.value || !subtitleRef.value || !gridRef.value) return;
-
-  const title = titleRef.value
-  const subtitle = subtitleRef.value
-  const portfolioItems = gridRef.value.querySelectorAll('.portfolio-item')
-  const loadMoreButton = loadMoreBtn.value
-
-  title.style.opacity = '0'
-  title.style.transform = 'translateY(30px)'
-  title.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-  
-  subtitle.style.opacity = '0'
-  subtitle.style.transform = 'translateY(30px)'
-  subtitle.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-
-  portfolioItems.forEach((item) => {
-    const element = item
-    element.style.opacity = '0'
-    element.style.transform = 'translateY(40px) scale(0.9)'
-    element.style.transition = 'all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-  })
-
-  if (loadMoreButton) {
-    loadMoreButton.style.opacity = '0'
-    loadMoreButton.style.transform = 'translateY(30px)'
-    loadMoreButton.style.transition = 'all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+const setPortfolioItemRef = (el, index) => {
+  if (el) {
+    portfolioItemRefs.value[index] = el
+    resetPortfolioItemState(el)
   }
 }
 
-const animateOnLoad = () => {
-  if (!titleRef.value || !subtitleRef.value || !gridRef.value) return;
+const resetPortfolioItemState = (item) => {
+  item.style.opacity = '0'
+  item.style.transform = 'translateY(50px) scale(0.9)'
+  item.style.transition = 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+}
+
+const initializeAnimationState = () => {
+  if (!titleRef.value || !subtitleRef.value) return;
 
   const title = titleRef.value
   const subtitle = subtitleRef.value
-  const portfolioItems = gridRef.value.querySelectorAll('.portfolio-item')
-  const loadMoreButton = loadMoreBtn.value
+
+  title.style.opacity = '0'
+  title.style.transform = 'translateY(30px)'
+  title.style.transition = 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+  
+  subtitle.style.opacity = '0'
+  subtitle.style.transform = 'translateY(30px)'
+  subtitle.style.transition = 'all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+}
+
+const animateTitleOnLoad = () => {
+  if (!titleRef.value || !subtitleRef.value) return;
+
+  const title = titleRef.value
+  const subtitle = subtitleRef.value
 
   setTimeout(() => {
     title.style.opacity = '1'
     title.style.transform = 'translateY(0)'
+  }, 300)
 
+  setTimeout(() => {
     subtitle.style.opacity = '1'
     subtitle.style.transform = 'translateY(0)'
+  }, 600)
+}
 
-    portfolioItems.forEach((item, index) => {
-      setTimeout(() => {
-        const element = item
-        element.style.opacity = '1'
-        element.style.transform = 'translateY(0) scale(1)'
-      }, index * 60)
-    })
+const animatePortfolioItem = (item, index) => {
+  if (animatedItems.has(index)) return
+  
+  const itemsPerRow = getItemsPerRow()
+  const rowIndex = Math.floor(index / itemsPerRow)
+  const columnIndex = index % itemsPerRow
+  
+  const rowDelay = rowIndex * 200
+  const columnDelay = columnIndex * 100
+  const totalDelay = rowDelay + columnDelay
+  
+  setTimeout(() => {
+    item.style.opacity = '1'
+    item.style.transform = 'translateY(0) scale(1)'
+    animatedItems.add(index)
+  }, totalDelay)
+}
 
-    if (loadMoreButton && hasMore.value) {
-      setTimeout(() => {
-        loadMoreButton.style.opacity = '1'
-        loadMoreButton.style.transform = 'translateY(0)'
-      }, portfolioItems.length * 60 + 200)
-    }
-  }, 100)
+const getItemsPerRow = () => {
+  const width = window.innerWidth
+  if (width >= 1024) return 3
+  if (width >= 640) return 2
+  return 1
 }
 
 const setupIntersectionObserver = () => {
@@ -215,44 +195,77 @@ const setupIntersectionObserver = () => {
 
   observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
-      if (entry.isIntersecting && !hasAnimated) {
-        animateOnLoad();
-        hasAnimated = true;
-      } else if (!entry.isIntersecting) {
-        hasAnimated = false;
+      if (entry.isIntersecting) {
+        if (!hasAnimatedTitle) {
+          animateTitleOnLoad();
+          hasAnimatedTitle = true;
+        }
         
-        if (titleRef.value && subtitleRef.value && gridRef.value) {
+        resetAllPortfolioItems()
+        setupAllPortfolioItemObservers()
+        
+      } else if (!entry.isIntersecting) {
+        hasAnimatedTitle = false;
+        
+        if (titleRef.value && subtitleRef.value) {
           const title = titleRef.value
           const subtitle = subtitleRef.value
-          const portfolioItems = gridRef.value.querySelectorAll('.portfolio-item')
-          const loadMoreButton = loadMoreBtn.value
           
           title.style.opacity = '0'
           title.style.transform = 'translateY(30px)'
           
           subtitle.style.opacity = '0'
           subtitle.style.transform = 'translateY(30px)'
-          
-          portfolioItems.forEach((item) => {
-            const element = item
-            element.style.opacity = '0'
-            element.style.transform = 'translateY(40px) scale(0.9)'
-          })
-
-          if (loadMoreButton) {
-            loadMoreButton.style.opacity = '0'
-            loadMoreButton.style.transform = 'translateY(30px)'
-          }
         }
+        
+        // Reset portfolio items state
+        resetAllPortfolioItems()
+        animatedItems.clear()
       }
     });
   }, {
-    threshold: 0.2,
+    threshold: 0.1,
     rootMargin: '0px 0px -50px 0px'
   });
 
   observer.observe(portfolioSection.value);
 };
+
+const resetAllPortfolioItems = () => {
+  portfolioItemRefs.value.forEach((item, index) => {
+    if (item) {
+      resetPortfolioItemState(item)
+    }
+  })
+}
+
+const setupPortfolioItemObserver = (item, index) => {
+  const existingObserver = itemObservers[index]
+  if (existingObserver) {
+    existingObserver.disconnect()
+  }
+
+  const itemObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting && !animatedItems.has(index)) {
+        animatePortfolioItem(item, index)
+      }
+    })
+  }, {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  })
+
+  itemObserver.observe(item)
+  itemObservers[index] = itemObserver
+}
+
+const setupAllPortfolioItemObservers = () => {
+  portfolioItemRefs.value.forEach((item, index) => {
+    if (!item || animatedItems.has(index)) return
+    setupPortfolioItemObserver(item, index)
+  })
+}
 
 onMounted(() => {
   nextTick(() => {
@@ -261,7 +274,9 @@ onMounted(() => {
     setupIntersectionObserver();
     
     setTimeout(() => {
-      if (portfolioSection.value && !hasAnimated) {
+      setupAllPortfolioItemObservers()
+      
+      if (portfolioSection.value && !hasAnimatedTitle) {
         const rect = portfolioSection.value.getBoundingClientRect();
         const isVisible = (
           rect.top < window.innerHeight * 0.8 && 
@@ -269,11 +284,11 @@ onMounted(() => {
         );
         
         if (isVisible) {
-          animateOnLoad();
-          hasAnimated = true;
+          animateTitleOnLoad();
+          hasAnimatedTitle = true;
         }
       }
-    }, 300);
+    }, 500);
   });
 });
 
@@ -281,5 +296,6 @@ onUnmounted(() => {
   if (observer) {
     observer.disconnect();
   }
+  itemObservers.forEach(observer => observer && observer.disconnect())
 })
 </script>
