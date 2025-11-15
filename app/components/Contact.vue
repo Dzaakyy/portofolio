@@ -2,15 +2,15 @@
   <section id="contact" class="min-h-screen py-24 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto">
       <div class="text-center mb-16">
-        <h2 class="text-4xl font-extrabold text-gray-900 dark:text-white sm:text-5xl mb-4">
+        <h2 class="text-4xl font-bold text-gray-900 dark:text-white sm:text-5xl mb-4">
           Hubungi Saya
         </h2>
         <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-          Silakan hubungi saya melalui form di bawah ini untuk diskusi lebih lanjut
+          Mari berkolaborasi! Silakan hubungi saya untuk diskusi lebih lanjut
         </p>
       </div>
 
-      <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700">
+      <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
         <form @submit.prevent="submitForm" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -22,7 +22,7 @@
                 id="nama" 
                 v-model="form.nama"
                 placeholder="John Doe"
-                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                class="w-full px-4 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
               >
             </div>
 
@@ -35,7 +35,7 @@
                 id="email" 
                 v-model="form.email"
                 placeholder="anda@email.com"
-                class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+                class="w-full px-4 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
               >
             </div>
           </div>
@@ -49,7 +49,7 @@
               id="subjek" 
               v-model="form.subjek"
               placeholder="Subjek pesan Anda"
-              class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+              class="w-full px-4 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
             >
           </div>
 
@@ -62,14 +62,14 @@
               rows="5" 
               v-model="form.pesan"
               placeholder="Tulis pesan Anda di sini..."
-              class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+              class="w-full px-4 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none"
             ></textarea>
           </div>
 
           <button 
             type="submit" 
             :disabled="isSubmitting"
-            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-6 rounded-lg font-medium transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-medium transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span v-if="!isSubmitting">Kirim Pesan</span>
             <span v-else class="flex items-center justify-center">
