@@ -14,7 +14,7 @@
     </Transition>
 
     <div v-show="!isLoading" class="main-content">
-      <PageHero />
+      <PageHero :key="cardKey" />
       <About />
       <Skills />
       <Portofolio />
@@ -32,6 +32,7 @@ const hasVisited = isClient ? sessionStorage.getItem('hasVisited') : null;
 const isLoading = ref(!hasVisited);
 const percentage = ref(0);
 const showLoaderContent = ref(false);
+const cardKey = ref(0);
 
 onMounted(async () => {
 
@@ -50,6 +51,7 @@ onMounted(async () => {
           if (isClient) sessionStorage.setItem('hasVisited', 'true');
 
           nextTick(() => {
+            cardKey.value++;
            
             window.dispatchEvent(new Event('resize'));
           });

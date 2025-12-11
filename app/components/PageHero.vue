@@ -69,7 +69,7 @@
             </div>
 
             <div class="md:w-1/2 flex justify-center md:justify-end">
-                <div ref="cardRef" class="w-full max-w-[18rem] sm:max-w-xs">
+                <div ref="cardRef" class="w-full max-w-[18rem] sm:max-w-xs will-change-transform">
                     <ProfileCard handle="dzaky" status="Online" contact-text="Contact Me" avatar-url="/assets/me.jpg"
                         :show-user-info="true" :show-behind-gradient="true" :enable-tilt="true"
                         @contact-click="handleContactClick" />
@@ -201,6 +201,7 @@ const animateOnLoad = () => {
         },
     });
 
+    // 1. Title Animation
     tl.fromTo(
         titleRef.value,
         {
@@ -230,6 +231,9 @@ const animateOnLoad = () => {
             scale: 1,
             duration: 1.0,
             ease: "power3.out",
+            onComplete: () => {
+                gsap.set(cardRef.value, { clearProps: "transform" });
+            }
         },
         "-=0.9",
     );
