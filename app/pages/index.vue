@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue';
 
-]const isClient = typeof window !== 'undefined';
+const isClient = typeof window !== 'undefined';
 const hasVisited = isClient ? sessionStorage.getItem('hasVisited') : null;
 
 const isLoading = ref(!hasVisited);
