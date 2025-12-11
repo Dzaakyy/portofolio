@@ -44,6 +44,17 @@
                             class="right-[-10px] bottom-[-10px] absolute [filter:drop-shadow(0_0_4px_var(--border-color,#fff))] border-[3px] border-[var(--border-color,#fff)] border-t-0 border-l-0 rounded-[3px] w-4 h-4 transition-none"></span>
                     </motion.div>
                 </div>
+                <div ref="cvButtonRef">
+                    <a href="/assets/CV_Dzaky_Rahmat_Nurwahid.pdf" download="CV_Dzaky_Rahmat_Nurwahid.pdf"
+                        class="group relative inline-flex items-center gap-2 px-8 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-full font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/30">
+                        <span>Download CV</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-5 h-5 group-hover:animate-bounce">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M12 9.75V17.25m0 0L8.25 13.5m3.75 3.75 3.75-3.75M12 3v2.25" />
+                        </svg>
+                    </a>
+                </div>
             </div>
 
             <div class="md:w-1/2 flex justify-center md:justify-end">
@@ -102,7 +113,7 @@ const focusRect = ref({ x: 0, y: 0, width: 0, height: 0 });
 let interval: number | null = null;
 
 const titleRef = ref<HTMLElement | null>(null);
-const cardRef = ref<HTMLElement | null>(null); // ref untuk kartu
+const cardRef = ref<HTMLElement | null>(null);
 const arrowRef = ref<HTMLElement | null>(null);
 
 const heroSection = ref<HTMLElement | null>(null);
@@ -110,7 +121,11 @@ let hasAnimated = false;
 let observer: IntersectionObserver | null = null;
 
 const handleContactClick = () => {
-    console.log("Contact button clicked!");
+    gsap.to(window, {
+        duration: 1.5,
+        scrollTo: "#contact",
+        ease: "power2.inOut",
+    });
 };
 
 const scrollToAbout = () => {

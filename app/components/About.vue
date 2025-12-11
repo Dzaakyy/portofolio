@@ -42,6 +42,8 @@
              '/assets/me10.jpg',
              '/assets/me11.jpg',
              '/assets/me12.jpg',
+             '/assets/me13.jpg',
+             '/assets/me14.jpg',
            ]" :fit="0.8" fit-basis="auto" :min-radius="600" :segments="34" :drag-sensitivity="20"
              :enlarge-transition-ms="300" :grayscale="true" 
              image-border-radius="30px" opened-image-width="250px" opened-image-height="350px" />
