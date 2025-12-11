@@ -1,10 +1,21 @@
 <template>
-    <div class="relative w-full h-screen flex items-center justify-center p-4" ref="heroSection">
-        <div class="flex flex-col md:flex-row items-center justify-center gap-12 lg:gap-20 max-w-6xl mx-auto w-full">
+    <div class="relative w-full h-screen flex items-center justify-center p-4 overflow-hidden" ref="heroSection">
+
+        <div class="absolute inset-0 -z-10 h-full w-ful">
+            <div
+                class="absolute h-full w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff33_1px,transparent_1px)] [background-size:20px_20px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_10%,transparent_100%)]">
+            </div>
+        </div>
+        <div
+            class="flex flex-col md:flex-row items-center justify-center gap-12 lg:gap-20 max-w-6xl mx-auto w-full z-10">
             <div class="md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left gap-8">
                 <div ref="titleRef">
-                    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white">
-                        Hi, Welcome to my code space
+                    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white tracking-tight">
+                        Welcome to my
+                        <span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-gray-700 to-gray-400 dark:from-white dark:to-gray-500">
+                            code space
+                        </span>
                     </h1>
                 </div>
 
@@ -29,8 +40,8 @@
                         height: focusRect.height,
                         opacity: activeWordIndex == null ? 0 : 1,
                     }" :transition="{
-                            duration: animationDuration,
-                        }" :style="{
+                        duration: animationDuration,
+                    }" :style="{
                             '--border-color': borderColor,
                             '--glow-color': glowColor,
                         }">
@@ -67,7 +78,7 @@
         </div>
 
         <a href="#about" ref="arrowRef" @click.prevent="scrollToAbout"
-            class="absolute bottom-10 left-1/2 -translate-x-1/2 text-gray-900 dark:text-white/70 animate-bounce cursor-pointer transition-all duration-300 hover:scale-110 hover:text-blue-500 dark:hover:text-blue-400">
+            class="absolute bottom-10 left-1/2 -translate-x-1/2 text-gray-900 dark:text-white/70 animate-bounce cursor-pointer transition-all duration-300 hover:scale-110 hover:text-blue-500 dark:hover:text-blue-400 z-10">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                 stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
@@ -97,8 +108,10 @@ const animatedWords = ["Web", "Mobile", "Backend"];
 const animatedIndexes = [0, 1, 2];
 
 const blurAmount = 3;
-const borderColor = "blue";
-const glowColor = "rgba(0, 0, 255, 0.6)";
+// Sesuai request sebelumnya, pakai currentColor biar aman
+const borderColor = "currentColor";
+const glowColor = "currentColor";
+
 const animationDuration = 2;
 const pauseBetweenAnimations = 1;
 

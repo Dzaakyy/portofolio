@@ -34,13 +34,12 @@
 
           <div class="group/card absolute top-0 left-0 w-full rounded-2xl border border-gray-200 dark:border-white/10 
                       bg-white dark:bg-[#0a0a0a]
-                      transition-all duration-500 ease-[cubic-bezier(0.25,0.8,0.25,1)] origin-top h-full
-                      
+                      transition-all duration-500 ease-[cubic-bezier(0.25,0.8,0.25,1)] origin-top h-full 
                       hover:h-auto hover:min-h-full
-                      hover:shadow-[0_0_40px_-5px_rgba(0,0,0,0.2)] 
+                      hover:shadow-[0_0_1.5rem_0.1rem_rgba(168,85,247,0.4)]
                       dark:hover:shadow-[0_0_50px_-10px_rgba(59,130,246,0.4)]
-                      hover:ring-1 hover:ring-blue-500/30
-                      hover:-translate-y-3
+                      hover:ring-1 hover:ring-purple-500/50 
+                      dark:hover:ring-blue-500/30
                       ">
 
             <div
@@ -135,7 +134,7 @@ const allProjects = ref([
   { id: 2, title: 'Penjadwalan Sidang', description: 'Aplikasi web yang digunakan untuk mengatur jadwal sidang secara efisien dan otomatis. Sistem ini mendukung pengaturan ruang, peserta sidang, dosen penguji, serta notifikasi jadwal. Menghindari bentrok jadwal antar dosen dan memaksimalkan penggunaan ruangan kampus.', imageUrl: '/assets/penjadwalan-sidang.png', tags: ['PHP', 'Laravel', 'MySQL'], githubUrl: 'https://github.com/Dzaakyy/penjadwalan-sidang' },
   { id: 3, title: 'Pendeteksi Penyakit Mangga', description: 'Aplikasi mobile berbasis Flutter yang mampu mendeteksi penyakit pada daun mangga menggunakan teknologi Machine Learning (TensorFlow Lite). Pengguna cukup memotret daun untuk hasil diagnosa instan beserta saran penanganan penyakitnya.', imageUrl: '/assets/penyakit-daun-mangga.png', tags: ['Flutter', 'ML', 'MySQL'], githubUrl: 'https://github.com/Dzaakyy/capstone-project-apps' },
   { id: 5, title: 'Web Perpustakaan', description: 'Web perpustakaan modern dengan Vue.js dan Node.js. Fitur lengkap: manajemen buku, peminjaman, role admin-pengguna, riwayat transaksi, dan pencarian canggih. Menggunakan Docker untuk kemudahan deployment dan skalabilitas.', imageUrl: '/assets/perpustakaan.png', tags: ['Vue', 'Node JS', 'Docker', 'MySQL'], githubUrl: 'https://github.com/Taufiqurrahman10/uas-topik-khusus-perpustakaan' },
-  { id: 6, title: 'Winboard Gamification', description: 'Platform gamification internal perusahaan berbasis web untuk meningkatkan engagement karyawan melalui leaderboard mingguan, challenge, dan sistem poin. Dilengkapi dengan animasi interaktif dan update data real-time.', imageUrl: '/assets/winboard.png', tags: ['TypeScript', 'React', 'Node JS', 'PostgreSQL'], liveUrl: 'https://winboard.wesclic.com' },
+  { id: 6, title: 'Winboard', description: 'Platform internal perusahaan berbasis web untuk meningkatkan engagement karyawan melalui leaderboard mingguan, challenge, dan sistem poin. Dilengkapi dengan animasi interaktif dan update data real-time.', imageUrl: '/assets/winboard.png', tags: ['TypeScript', 'React', 'Node JS', 'PostgreSQL'], liveUrl: 'https://winboard.wesclic.com' },
   { id: 7, title: 'Muslim Super App', description: 'Aplikasi all-in-one untuk umat Islam: sosial media, chat real-time, marketplace, Al-Qur\'an digital, dan jadwal sholat otomatis. Dibangun dengan arsitektur microservices untuk performa tinggi.', imageUrl: '/assets/MSA.png', tags: ['Flutter', 'WebSocket', 'PostgreSQL'], },
 ])
 
